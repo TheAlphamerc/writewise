@@ -1,15 +1,7 @@
-import Image from "next/image";
-import { Inter, Roboto_Mono } from "@next/font/google";
-import styles from "./page.module.css";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ClassValue, clsx } from "clsx";
 import { Github, Linkedin, Rss, Twitter } from "lucide-react";
-
-export const roboto_mono = Roboto_Mono({
-  subsets: ["latin"],
-  display: "optional",
-});
+import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
