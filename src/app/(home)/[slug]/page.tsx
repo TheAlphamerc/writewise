@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Inter } from "@next/font/google";
 import Link from "next/link";
+import { ArticleCard } from "../(component)/article_lists";
 
 // If loading a variable font, you don't need to specify the font weight
 const inter = Inter({
@@ -10,7 +11,18 @@ const inter = Inter({
   weight: "300",
 });
 
-export default function About() {
+async function getData() {
+  const res = await fetch("https://jsonplaceholder.typicode.com/todos/1");
+  // Recommendation: handle errors
+  if (!res.ok) {
+    // This will activate the closest `error.js` Error Boundary
+    throw new Error("Failed to fetch data");
+  }
+
+  return await res.json();
+}
+export default async function Article() {
+  const data = await getData();
   return (
     <div className="">
       <HeroComponent />
@@ -126,8 +138,7 @@ function RelatedPosts() {
   const article = {
     img: "https://source.unsplash.com/random?orientation=landscape&&nature",
     title: " Lorem ipsum dolor sit amen, consectetur advising elite,",
-    subtitle:
-      "Sed do elusion tempore incident ut laborer et dolores magna aliquant.",
+    body: "Sed do elusion tempore incident ut laborer et dolores magna aliquant.",
     url: "https://source.unsplash.com/random?orientation=landscape",
     author: {
       name: "Lorem Ipsum",
@@ -145,65 +156,14 @@ function RelatedPosts() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4  place-content-center mx-auto">
           {[...Array(3)].map((_, index) => (
             <ArticleCard
+              id={`${index}`}
               key={index}
               {...article}
-              slug={`article-slug-${index + 1}`}
+              slug={`slug-article-${index}`}
             />
           ))}
         </div>
       </div>
     </div>
-  );
-}
-
-function ArticleCard({
-  img,
-  title,
-  subtitle,
-  url,
-  author,
-  createdAt,
-  tags,
-  slug,
-}: {
-  img: string;
-  title: string;
-  subtitle: string;
-  url?: string;
-  author?: any;
-  createdAt?: string;
-  tags?: any[];
-  slug: string;
-}) {
-  return (
-    <Link href={`/${slug}`}>
-      <div className="ArticleCard p-2 rounded max-w-lg">
-        <div className="flex flex-col items-center gap-4 object-cover">
-          <Image
-            src={img}
-            alt={""}
-            width="400"
-            height="150"
-            className="shadow rounded-lg  "
-          />
-          <div className="flex w-full gap-2 items-center">
-            <Image
-              src={author.img}
-              alt={""}
-              height={20}
-              width={20}
-              className="rounded-full h-5 w-5"
-            />
-            <p className="text-slate-700 font-medium text-sm">{author.name}</p>
-
-            <p className="text-gray-500 text-sm">&nbsp;/&nbsp;{createdAt}</p>
-          </div>
-          <div className="flex flex-col items-center gap-4 w-full">
-            <h1 className=" font-semibold w-full">{title}</h1>
-            <p className="text-gray-500 text-sm w-full">{subtitle}</p>
-          </div>
-        </div>
-      </div>
-    </Link>
   );
 }
