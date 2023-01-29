@@ -1,4 +1,5 @@
 import { Inter } from "@next/font/google";
+import AnalyticsWrapper from "./component/analytics";
 import "./globals.css";
 
 const inter = Inter({
@@ -16,7 +17,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head />
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        {children}
+        <AnalyticsWrapper />
+      </body>
     </html>
   );
 }
