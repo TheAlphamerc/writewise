@@ -73,7 +73,7 @@ export function ArticleCard({
   slug: string;
 }) {
   return (
-    <Link href={`/${slug}-${id}`}>
+    <Link href={`/067dd719a912471ea9a3ac10710e7fdf`}>
       <div className="ArticleCard p-2 rounded max-w-lg">
         <div className="flex flex-col items-center gap-4 object-cover">
           <Image

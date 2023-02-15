@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Github, Linkedin, Rss, Twitter } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
 import AllArticle from "./(component)/article_lists";
 import Pagination from "./(component)/pagination";
 

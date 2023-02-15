@@ -1,7 +1,23 @@
+import { cache } from "react";
 import Image from "next/image";
 import { Inter } from "@next/font/google";
 import Link from "next/link";
 import { ArticleCard } from "../(component)/article_lists";
+import { NotionAPI } from "notion-client";
+import { NotionRenderer } from "react-notion-x";
+import NotionPage from "../(component)/notion-page";
+import { useRouter } from "next/navigation";
+
+// core styles shared by all of react-notion-x (required)
+import "react-notion-x/src/styles.css";
+
+// used for code syntax highlighting (optional)
+import "prismjs/themes/prism-tomorrow.css";
+
+// used for rendering equations (optional)
+import "katex/dist/katex.min.css";
+import StartDotPattern from "@/components/pattern/start_dot_pattern";
+import { getNotionPage } from "../utils/getNotionPage";
 
 // If loading a variable font, you don't need to specify the font weight
 const inter = Inter({
@@ -11,22 +27,16 @@ const inter = Inter({
   weight: "300",
 });
 
-async function getData() {
-  const res = await fetch("https://jsonplaceholder.typicode.com/todos/1");
-  // Recommendation: handle errors
-  if (!res.ok) {
-    // This will activate the closest `error.js` Error Boundary
-    throw new Error("Failed to fetch data");
-  }
-
-  return await res.json();
-}
-export default async function Article() {
-  const data = await getData();
+export default async function Article({
+  params: { slug },
+}: {
+  params: { slug: string };
+}) {
+  const recordMap = await getNotionPage(slug);
   return (
     <div className="">
       <HeroComponent />
-      <ArticleBody />
+      <ArticleBody recordMap={recordMap} rootPageId={slug} />
       <RelatedPosts />
     </div>
   );
@@ -34,101 +44,52 @@ export default async function Article() {
 
 function HeroComponent() {
   return (
-    <div className="HeroComponent bg-gray-50 py-20 flex flex-col items-center gap-12 text-center">
-      <h1>
-        <span className="text-5xl font-bold">Hi, Lorem Ipsum!!</span>
-      </h1>
-      <div className="flex flex-col items-center gap-4">
-        <p className="">
-          Lorem ipsum dolor sit amen, consectetur advising elite,
-        </p>
-        <p className="">
-          Sed do elusion tempore incident ut laborer et dolores magna aliquant.
-        </p>
-      </div>
-      <div className="flex items-center">
-        <div className="flex w-full gap-2 items-center">
-          <Image
-            src={"https://source.unsplash.com/random?face"}
-            alt={""}
-            height={20}
-            width={20}
-            className="rounded-full h-5 w-5"
-          />
-          <span className="text-slate-700 font-medium text-sm">
-            Lorem Ipsum
-          </span>
-          <span className="text-gray-500 text-sm">&nbsp;• &nbsp;</span>
-          <span className="text-gray-500 text-sm">2021-08-01</span>
+    <StartDotPattern
+      Children={
+        <div className="HeroComponent bg-gray-50 bg-opacity-30 py-20 flex flex-col items-center gap-12 text-center">
+          <h1>
+            <span className="text-5xl font-bold">Hi, Lorem Ipsum!!</span>
+          </h1>
+          <div className="flex flex-col items-center gap-4">
+            <p className="">
+              Lorem ipsum dolor sit amen, consectetur advising elite,
+            </p>
+            <p className="">
+              Sed do elusion tempore incident ut laborer et dolores magna
+              aliquant.
+            </p>
+          </div>
+          <div className="flex items-center">
+            <div className="flex w-full gap-2 items-center">
+              <Image
+                src={"https://source.unsplash.com/random?face"}
+                alt={""}
+                height={20}
+                width={20}
+                className="rounded-full h-5 w-5"
+              />
+              <span className="text-slate-700 font-medium text-sm">
+                Lorem Ipsum
+              </span>
+              <span className="text-gray-500 text-sm">&nbsp;• &nbsp;</span>
+              <span className="text-gray-500 text-sm">2021-08-01</span>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      }
+    />
   );
 }
 
-function ArticleBody() {
+function ArticleBody({ recordMap, rootPageId }: any) {
+  if (!recordMap) {
+    return (
+      <div className="text-center font-semibold text-lg py-20">Not Found</div>
+    );
+  }
   return (
     <div className="flex flex-col items-center gap-4 max-w-4xl mx-auto pt-8 md:px-0 px-4">
-      <Image
-        src={
-          "https://images.unsplash.com/photo-1469536526925-9b5547cd5d68?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxfDB8MXxyYW5kb218MHx8b3JpZW50YXRpb24sbmF0dXJlfHx8fHx8MTY3NDk0Njg3MA&ixlib=rb-4.0.3&q=80&utm_campaign=api-credit&utm_medium=referral&utm_source=unsplash_source&w=1080"
-        }
-        alt={""}
-        width="820"
-        height="250"
-        className="shadow rounded w-full "
-      />
-      <h1 className="font-bold w-full text-xl">
-        Lorem ipsum began as scrambled, nonsensical Latin derived from
-        Cicero&apos;s 1st-century BC text De Finibus Bonorum et Malorum.
-      </h1>
-      <p className={inter.className}>
-        What I find remarkable is that this text has been the industry&apos;s
-        standard dummy text ever since some printer in the 1500s took a galley
-        of type and scrambled it to make a type specimen book; it has survived
-        not only four centuries of letter-by-letter resetting but even the leap
-        into electronic typesetting, essentially unchanged except for an
-        occasional &apos;ing&apos; or &apos;y&apos; thrown in. It&apos;s ironic
-        that when the then-understood Latin was scrambled, it became as
-        incomprehensible as Greek; the phrase &apos;it&apos;s Greek to me&apos;
-        and &apos;greeking&apos; have common semantic roots!” (The editors
-        published his letter in a correction headlined “Lorem Oopsum
-      </p>
-      <h1 className="font-semibold w-full text-lg">
-        Creation timelines for the standard lorem ipsum passage vary, with some
-        citing the 15th century and others the 20th.
-      </h1>
-      <p className={inter.className}>
-        So how did the classical Latin become so incoherent? According to
-        McClintock, a 15th century typesetter likely scrambled part of
-        Cicero&apos;s De Finibus in order to provide placeholder text to mockup
-        various fonts for a type specimen book
-      </p>
-      <p className={inter.className}>
-        It&apos;s difficult to find examples of lorem ipsum in use before
-        Letraset made it popular as a dummy text in the 1960s, although
-        McClintock says he remembers coming across the lorem ipsum passage in a
-        book of old metal type samples. So far he hasn&apos;t relocated where he
-        once saw the passage, but the popularity of Cicero in the 15th century
-        supports the theory that the filler text has been used for centuries.
-      </p>
-      <p className={inter.className}>
-        And anyways, as Cecil Adams reasoned, “[Do you really] think graphic
-        arts supply houses were hiring classics scholars in the 1960s?” Perhaps.
-        But it seems reasonable to imagine that there was a version in use far
-        before the age of Letraset. McClintock wrote to Before & After to
-        explain his discovery; “What I find remarkable is that this text has
-        been the industry&apos;s standard dummy text ever since some printer in
-        the 1500s took a galley of type and scrambled it to make a type specimen
-        book; it has survived not only four centuries of letter-by-letter
-        resetting but even the leap into electronic typesetting, essentially
-        unchanged except for an occasional &apos;ing&apos; or &apos;y&apos;
-        thrown in. It&apos;s ironic that when the then-understood Latin was
-        scrambled, it became as incomprehensible as Greek; the phrase
-        &apos;it&apos;s Greek to me&apos; and &apos;greeking&apos; have common
-        semantic roots!” (The editors published his letter in a correction
-        headlined “Lorem Oopsum”).
-      </p>
+      <NotionPage recordMap={recordMap} rootPageId={rootPageId} />
     </div>
   );
 }
